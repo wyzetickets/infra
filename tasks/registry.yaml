@@ -1,0 +1,22 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImageRepository
+metadata:
+  name: loomis-site
+  namespace: flux-system
+spec:
+  image: loomistechnologies/loomis-site
+  interval: 1m0s
+  secretRef:
+    name: dockerhub-secrets
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImagePolicy
+metadata:
+  name: loomis-site
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: loomis-site
+  policy:
+    semver:
+      range: '>=0.0.0'

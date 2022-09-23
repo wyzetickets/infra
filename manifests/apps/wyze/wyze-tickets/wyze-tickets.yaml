@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: wyze
+  name: wyze-tickets
+  labels:
+    app: wyze-tickets
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wyze-tickets
+  template:
+    metadata:
+      labels:
+        app: wyze-tickets
+    spec:
+      containers:
+        - name: wyze-tickets
+          image: ryanpkennedy/wyze-tickets:main
+          command: ['bash', '-c', 'sleep 20; npm run prod-server']
+          env:
+            - name: PROXY
+              value: 'FALSE'
+            - name: REDIS_SERVICE
+              valueFrom:
+                secretKeyRef:
+                  name: wyze-tickets-secrets
+                  key: REDIS_SERVICE
+            - name: REDIS_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: wyze-tickets-secrets
+                  key: REDIS_PORT
+      imagePullSecrets:
+        - name: dockerhub-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wyze-tickets
+  namespace: wyze
+spec:
+  type: NodePort
+  ports:
+    - port: 4001
+      targetPort: 4001
+  selector:
+    app: wyze-tickets

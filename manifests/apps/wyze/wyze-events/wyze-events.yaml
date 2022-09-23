@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: wyze
+  name: wyze-events
+  labels:
+    app: wyze-events
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wyze-events
+  template:
+    metadata:
+      labels:
+        app: wyze-events
+    spec:
+      containers:
+        - name: wyze-events
+          image: ryanpkennedy/wyze-events:sha-4e617b0
+          command: ['bash', '-c', 'sleep 20; npm run prod-server']
+          env:
+            - name: DATABASE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: wyze-events-secrets
+                  key: DATABASE_HOST
+            - name: DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: wyze-events-secrets
+                  key: DATABASE_NAME
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: wyze-events-secrets
+                  key: DATABASE_PASSWORD
+            - name: DATABASE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: wyze-events-secrets
+                  key: DATABASE_PORT
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: wyze-events-secrets
+                  key: DATABASE_USERNAME
+            - name: SEATGEEK_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: wyze-events-secrets
+                  key: SEATGEEK_KEY
+            - name: STUBHUB_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: wyze-events-secrets
+                  key: STUBHUB_KEY
+            - name: TICKETMASTER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: wyze-events-secrets
+                  key: TICKETMASTER_KEY
+      imagePullSecrets:
+        - name: dockerhub-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wyze-events
+  namespace: wyze
+spec:
+  type: ClusterIP
+  ports:
+    - port: 4000
+      targetPort: 4000
+  selector:
+    app: wyze-events

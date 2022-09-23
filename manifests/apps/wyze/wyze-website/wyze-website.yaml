@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: wyze
+  name: wyze-website
+  labels:
+    app: wyze-website
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wyze-website
+  template:
+    metadata:
+      labels:
+        app: wyze-website
+    spec:
+      containers:
+        - name: wyze-website
+          image: ryanpkennedy/wyze-website:main
+          command: ["bash", "-c", "npm start"]
+          env:
+            - name: EVENTS_PROD
+              valueFrom:
+                secretKeyRef:
+                  name: wyze-website-secrets
+                  key: EVENTS_PROD
+            - name: EVENTS_PROD_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: wyze-website-secrets
+                  key: EVENTS_PROD_PORT
+            - name: EVENTS_DEV
+              valueFrom:
+                secretKeyRef:
+                  name: wyze-website-secrets
+                  key: EVENTS_DEV
+            - name: EVENTS_DEV_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: wyze-website-secrets
+                  key: EVENTS_DEV_PORT
+            - name: TICKETS_PROD
+              valueFrom:
+                secretKeyRef:
+                  name: wyze-website-secrets
+                  key: TICKETS_PROD
+            - name: TICKETS_PROD_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: wyze-website-secrets
+                  key: TICKETS_PROD_PORT
+            - name: TICKETS_DEV
+              valueFrom:
+                secretKeyRef:
+                  name: wyze-website-secrets
+                  key: TICKETS_DEV
+            - name: TICKETS_DEV_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: wyze-website-secrets
+                  key: TICKETS_DEV_PORT
+            - name: BACKEND_URL
+              valueFrom:
+                secretKeyRef:
+                  name: wyze-website-secrets
+                  key: BACKEND_URL
+            - name: BACKEND_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: wyze-website-secrets
+                  key: BACKEND_PORT
+          ports:
+            - containerPort: 3000
+      imagePullSecrets:
+        - name: dockerhub-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wyze-website
+  namespace: wyze
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 3000
+  selector:
+    app: wyze-website

@@ -1,0 +1,21 @@
+cd into ./terraform
+run 'terraform init'
+run 'terraform apply'
+should produce a kubeconfig_wyze file. copy the contents of that file into ~HOME/.kube/config
+from wyze-infra/manifests/cluster run 'kubectl apply -f .' (sometimes may have to run this twice, if you get an error about CRDs. I believe this is due to order of dependencies created)
+
+create dockerhub secret using command : kubectl create secret docker-registry wyzedh --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
+- Ex: kubectl create secret docker-registry wyzedh --docker-server=https://index.docker.io/v1/ --docker-username=ryanpkennedy --docker-password=Rpk42713DH --docker-email=ryan.kennedy@huskers.unl.edu
+
+run 'kubectl get secret wyzedh --output=yaml' to get the secret output. Then copy the .dockerconfigjson value
+
+need to then get public key from kubeseal controller by running 'kubectl get pods -A'. 
+Find the pod named 'sealed-secrets-controller-xxxxxxxxxxx'. Then run 'kubectl logs sealed-secrets-controller-xxxxxxxxxxx -n kube-system'
+Copy the certificate into a .pem file. Make sure not to push this to github
+kubeseal the wyze secrets, by running the commands in kubeseal.txt
+
+run 'kubeseal --cert ks.pem --scope cluster-wide <dockerhub.raw.json -o yaml> dockerhub.sealed.secrets.yaml'
+
+copy the sealed secrets into their respective ./secrets folders in wyze-infra/manifests/apps/wyze
+
+then from wyze-infra/manifests/apps/wyze/ run 'kubectl apply -f . --recursive'

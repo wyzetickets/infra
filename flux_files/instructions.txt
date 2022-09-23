@@ -1,0 +1,1 @@
+these files (in ./flux_files) should be moved into ./manifests/cluster once you have the secrets and everything set up for flux
