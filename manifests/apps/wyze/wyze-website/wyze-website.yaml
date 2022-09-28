@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: wyze-website
-          image: ryanpkennedy/wyze-website:main
+          image: wyzetickets/wyze-website:main
           command: ["bash", "-c", "npm start"]
           env:
             - name: EVENTS_PROD

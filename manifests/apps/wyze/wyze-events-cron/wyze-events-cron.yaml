@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: wyze-events-cron
-          image: ryanpkennedy/wyze-events-cron:sha-3e0315e
+          image: wyzetickets/wyze-events-cron:sha-583c9c4
           command: ['bash', '-c', 'sleep 30; npm run prod-cron']
           env:
             - name: runOnInit

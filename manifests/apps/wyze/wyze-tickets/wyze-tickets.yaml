@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: wyze-tickets
-          image: ryanpkennedy/wyze-tickets:main
+          image: wyzetickets/wyze-tickets:main
           command: ['bash', '-c', 'sleep 20; npm run prod-server']
           env:
             - name: PROXY
